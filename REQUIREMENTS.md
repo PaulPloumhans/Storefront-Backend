@@ -29,47 +29,55 @@ Current order by user                   | '/orders'                     | [GET] 
 
 ## Data Shapes
 
+### Category
+
+>Table: categories(
+    name: VARCHAR(100) primary key
+    )
+    
 #### Product
-Table: products(
+>Table: products(
         id:serial primary key,
-        name: varchar(100),
+        name: varchar(100) not null,
         price: real not null,
         category: varchar(100) references categories(name)[foreign key to categories table]
         )
+        
+To implement:
 - id
 - name
 - price
 - [OPTIONAL] category
 
-### Category
-Table: categories(
-    name: VARCHAR(100) primary key
-    )
-
 #### User
-Table: users (
+>Table: users (
     id:serial primary key,
     firstName: varchar(100),
     lastName: varchar(100),
     password_digest: text
     )
+    
+To implement:    
 - id
 - firstName
 - lastName
 - password
 
 #### Orders
-Table: orders(
+>Table: orders(
     id:serial primary key,
     user_id: integer references users(id)[foreign key to users table],
-    status: varchar(10)
+    status: varchar(10) not null
     )
-Table: order_products(
+ >   
+ >Table: order_products(
     id:serial primary key,
     quantity: integer,
     order_id: integer references orders(id)[foreign key to orders table],
     user_id: integer references users(id)[foreign key to users table]
     )
+
+To implement:
 - id
 - id of each product in the order
 - quantity of each product in the order
