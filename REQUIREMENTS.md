@@ -4,36 +4,66 @@ The company stakeholders want to create an online storefront to showcase their g
 These are the notes from a meeting with the frontend developer that describe what endpoints the API needs to supply, as well as data shapes the frontend and backend have agreed meet the requirements of the application. 
 
 ## API Endpoints
-#### Products
-- Index 
-- Show
-- Create [token required]
-- [OPTIONAL] Top 5 most popular products 
-- [OPTIONAL] Products by category (args: product category)
+A SHOW route: 'blogs/:id' [GET] 
+#### Products routes
+- INDEX                                                     '/products' [GET]
+- SHOW                                                      '/products/:id' [GET]
+- CREATE                                                    '/products' [POST] [token required]
+- [OPTIONAL] Top 5 most popular products                    '/products-top-5' [GET]
+- [OPTIONAL] Products by category                           '/products-by-category [GET] (args: product category) 
 
-#### Users
-- Index [token required]
-- Show [token required]
-- Create N[token required]
+#### Users routes
+- INDEX                                                     '/users' [GET] [token required]
+- SHOW                                                      '/users/:id'[GET] [token required]
+- CREATE                                                    '/users' [POST] [token required]
 
-#### Orders
-- Current Order by user (args: user id)[token required]
-- [OPTIONAL] Completed Orders by user (args: user id)[token required]
+#### Orders routes
+- Current Order by user                                     '/orders' [GET] [token required] (args: user id)
+- [OPTIONAL] Completed Orders by user                       '/completed-orders-by-user' [GET] [token required] (args: user id)
 
 ## Data Shapes
+
 #### Product
--  id
+Table: products(
+        id:serial primary key,
+        name: varchar(100),
+        price: real not null,
+        category: varchar(100) references categories(name)[foreign key to categories table]
+        )
+- id
 - name
 - price
 - [OPTIONAL] category
 
+### Category
+Table: categories(
+    name: VARCHAR(100) primary key
+    )
+
 #### User
+Table: users (
+    id:serial primary key,
+    firstName: varchar(100),
+    lastName: varchar(100),
+    password_digest: text
+    )
 - id
 - firstName
 - lastName
 - password
 
 #### Orders
+Table: orders(
+    id:serial primary key,
+    user_id: integer references users(id)[foreign key to users table],
+    status: varchar(10)
+    )
+Table: order_products(
+    id:serial primary key,
+    quantity: integer,
+    order_id: integer references orders(id)[foreign key to orders table],
+    user_id: integer references users(id)[foreign key to users table]
+    )
 - id
 - id of each product in the order
 - quantity of each product in the order
