@@ -4,22 +4,28 @@ The company stakeholders want to create an online storefront to showcase their g
 These are the notes from a meeting with the frontend developer that describe what endpoints the API needs to supply, as well as data shapes the frontend and backend have agreed meet the requirements of the application. 
 
 ## API Endpoints
-A SHOW route: 'blogs/:id' [GET] 
+
 #### Products routes
-|INDEX |                                                    '/products' [GET]|
-|SHOW|                                                      '/products/:id' [GET]|
-|CREATE|                                                    '/products' [POST] | [token required]|
-- [OPTIONAL] Top 5 most popular products                    '/products-top-5' [GET]
-- [OPTIONAL] Products by category                           '/products-by-category [GET] (args: product category) 
+ROUTE                                   | Endpoint                      | HTTP verb     | Token required?       | Arguments
+-----                                   | --------                      | ---------     | ------                | ---------
+INDEX                                   | '/products'                   | [GET]         |                       |
+SHOW                                    | '/products/:id'               | [GET]         |                       |
+CREATE                                  | '/products'                   | [POST]        | yes                   |
+[OPTIONAL] Top 5 most popular products  | '/products-top-5'             | [GET]         |                       |
+[OPTIONAL] Products by category         | '/products-by-category        | [GET]         |                       | product category
 
 #### Users routes
-- INDEX                                                     '/users' [GET] [token required]
-- SHOW                                                      '/users/:id'[GET] [token required]
-- CREATE                                                    '/users' [POST] [token required]
+ROUTE                                   | Endpoint                      | HTTP verb     | Token required?       | Arguments
+-----                                   | --------                      | ---------     | ------                | ---------
+INDEX                                   | '/users'                      | [GET]         | yes                   |
+SHOW                                    | '/users/:id'                  | [GET]         | yes                   |
+CREATE                                  | '/users'                      | [POST]        | yes                   |
 
 #### Orders routes
-- Current Order by user                                     '/orders' [GET] [token required] (args: user id)
-- [OPTIONAL] Completed Orders by user                       '/completed-orders-by-user' [GET] [token required] (args: user id)
+ROUTE                                   | Endpoint                      | HTTP verb     | Token required?       | Arguments
+-----                                   | --------                      | ---------     | ------                | ---------
+Current order by user                   | '/orders'                     | [GET]         | yes                   | user id
+[OPTIONAL] Completed orders by user     | '/completed-orders-by-user'   | [GET]         | yes                   | user id
 
 ## Data Shapes
 
