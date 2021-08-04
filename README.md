@@ -31,6 +31,22 @@ Table: Books (id:varchar, title:varchar, author:varchar, published_year:varchar,
 
 ### 2.  DB Creation and Migrations
 
+In order to create the Postgres database, first create the user by running in the psql command line:
+`CREATE USER storefront_user with password '7kJ3DDpqnHe3Qx';`
+Then create the tables for development and testing
+`CREATE DATABASE storefront_backend;`
+`CREATE DATABASE storefront_backend_test;`
+Finally, grant `storefront_user` access to these tables
+`GRANT ALL PRIVILEGES ON DATABASE storefront_backend TO storefront_user;`
+`GRANT ALL PRIVILEGES ON DATABASE storefront_backend_test TO storefront_user;`
+
+To run the migration up on the dev environment, run
+`db-migrate up`
+To run the migration up test on the test environment, run
+`db-migrate up -e test`
+To run the migrations down, substitute `down`for `up`.
+
+
 Now that you have the structure of the databse outlined, it is time to create the database and migrations. Add the npm packages dotenv and db-migrate that we used in the course and setup your Postgres database. If you get stuck, you can always revisit the database lesson for a reminder. 
 
 You must also ensure that any sensitive information is hashed with bcrypt. If any passwords are found in plain text in your application it will not pass.
