@@ -6,9 +6,9 @@ These are the notes from a meeting with the frontend developer that describe wha
 ## API Endpoints
 A SHOW route: 'blogs/:id' [GET] 
 #### Products routes
-- INDEX                                                     '/products' [GET]
-- SHOW                                                      '/products/:id' [GET]
-- CREATE                                                    '/products' [POST] [token required]
+|INDEX |                                                    '/products' [GET]|
+|SHOW|                                                      '/products/:id' [GET]|
+|CREATE|                                                    '/products' [POST] | [token required]|
 - [OPTIONAL] Top 5 most popular products                    '/products-top-5' [GET]
 - [OPTIONAL] Products by category                           '/products-by-category [GET] (args: product category) 
 
