@@ -1,6 +1,7 @@
 import Client from '../database';
 
-// CREATE TABLE categories (id SERIAL PRIMARY KEY, name VARCHAR(100) NOT NULL);
+// Migration up command to create the table in POSTGRES
+// CREATE TABLE users (id SERIAL PRIMARY KEY, firstName VARCHAR(100) NOT NULL, lastName VARCHAR(100) NOT NULL, password_digest text, UNIQUE(firstName,lastName))
 
 // define TypeScript type for Order
 export type Category = {

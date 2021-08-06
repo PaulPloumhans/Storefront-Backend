@@ -1,12 +1,11 @@
 import Client from '../database';
 
-//CREATE TABLE orders (id SERIAL PRIMARY KEY, status  VARCHAR(15), user_id integer REFERENCES users(id));
-
+// CREATE TABLE orders (id SERIAL PRIMARY KEY, user_id integer references users(id), status varchar(10) NOT NULL);
 // define TypeScript type for Order
 export type Order = {
     id?: number;
-    status: string;
     user_id: number;
+    status: string; // either 'active' (at creation) or 'closed' (once OrderStore.close has been closed)
 };
 
 export class OrderStore {
@@ -34,6 +33,30 @@ export class OrderStore {
         }
     }
 
+    async showByUserId(userId: number): Promise<Order> {
+        try {
+            const conn = await Client.connect();
+            const sql = 'SELECT * FROM orders WHERE user_id=($1) AND status=($2)';
+            const result = await conn.query(sql, [userId, 'active']);
+            conn.release();
+            return result.rows[0];
+        } catch (err) {
+            throw new Error(`Cannot find order for user ${userId}. Error: ${err}`);
+        }
+    }
+
+    async showCompleteByUserId(userId: number): Promise<Order[]> {
+        try {
+            const conn = await Client.connect();
+            const sql = 'SELECT * FROM orders WHERE user_id=($1) AND status=($2)';
+            const result = await conn.query(sql, [userId, 'complete']);
+            conn.release();
+            return result.rows;
+        } catch (err) {
+            throw new Error(`Cannot find order for user ${userId}. Error: ${err}`);
+        }
+    }
+
     async create(userId: number): Promise<Order> {
         try {
             const conn = await Client.connect();
@@ -48,11 +71,27 @@ export class OrderStore {
             );
         }
     }
-    // CREATE TABLE order_products (id SERIAL PRIMARY KEY, quantity integer, order_id integer REFERENCES orders(id), product_id integer REFERENCES products(id));
+
+    async complete(id: number): Promise<Order> {
+        try {
+            const conn = await Client.connect();
+            const sql =
+                'UPDATE orders SET status = ($1) WHERE id = ($2) RETURNING *';
+            const result = await conn.query(sql, ['complete', id]);
+            conn.release();
+            return result.rows[0];
+        } catch (err) {
+            throw new Error(
+                `Cannot complete order ${id}. Error: ${err}`
+            );
+        }
+    }
+
+    // CREATE TABLE order_products(id SERIAL PRIMARY KEY, quantity integer, order_id integer references orders(id), product_id integer references products(id));
     async addProduct(
+        quantity: number,
         orderId: number,
-        productId: number,
-        quantity: number
+        productId: number
     ): Promise<{
         id: number;
         quantity: number;

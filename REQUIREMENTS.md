@@ -32,7 +32,7 @@ Current order by user                   | '/orders'                     | [GET] 
 ### Category
 
 >Table: categories(
-    name: VARCHAR(100) primary key
+    id SERIAL PRIMARY KEY, name VARCHAR(100) NOT NULL UNIQUE
     )
     
 #### Product
