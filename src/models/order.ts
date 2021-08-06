@@ -36,24 +36,30 @@ export class OrderStore {
     async showByUserId(userId: number): Promise<Order> {
         try {
             const conn = await Client.connect();
-            const sql = 'SELECT * FROM orders WHERE user_id=($1) AND status=($2)';
+            const sql =
+                'SELECT * FROM orders WHERE user_id=($1) AND status=($2)';
             const result = await conn.query(sql, [userId, 'active']);
             conn.release();
             return result.rows[0];
         } catch (err) {
-            throw new Error(`Cannot find order for user ${userId}. Error: ${err}`);
+            throw new Error(
+                `Cannot find order for user ${userId}. Error: ${err}`
+            );
         }
     }
 
     async showCompleteByUserId(userId: number): Promise<Order[]> {
         try {
             const conn = await Client.connect();
-            const sql = 'SELECT * FROM orders WHERE user_id=($1) AND status=($2)';
+            const sql =
+                'SELECT * FROM orders WHERE user_id=($1) AND status=($2)';
             const result = await conn.query(sql, [userId, 'complete']);
             conn.release();
             return result.rows;
         } catch (err) {
-            throw new Error(`Cannot find order for user ${userId}. Error: ${err}`);
+            throw new Error(
+                `Cannot find order for user ${userId}. Error: ${err}`
+            );
         }
     }
 
@@ -81,9 +87,7 @@ export class OrderStore {
             conn.release();
             return result.rows[0];
         } catch (err) {
-            throw new Error(
-                `Cannot complete order ${id}. Error: ${err}`
-            );
+            throw new Error(`Cannot complete order ${id}. Error: ${err}`);
         }
     }
 

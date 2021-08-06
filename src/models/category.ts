@@ -5,8 +5,8 @@ import Client from '../database';
 
 // define TypeScript type for Order
 export type Category = {
-    id? : number;
-    name : string;
+    id?: number;
+    name: string;
 };
 
 export class CategoryStore {
@@ -37,18 +37,15 @@ export class CategoryStore {
     async create(name: string): Promise<Category> {
         try {
             const conn = await Client.connect();
-            const sql =
-                'INSERT INTO categories (name) VALUES($1) RETURNING *';
+            const sql = 'INSERT INTO categories (name) VALUES($1) RETURNING *';
             const result = await conn.query(sql, [name]);
             conn.release();
             return result.rows[0];
         } catch (err) {
-            throw new Error(
-                `Cannot add new category ${name}. Error: ${err}`
-            );
+            throw new Error(`Cannot add new category ${name}. Error: ${err}`);
         }
-    } 
-    
+    }
+
     async delete(id: number): Promise<Category> {
         try {
             const conn = await Client.connect();

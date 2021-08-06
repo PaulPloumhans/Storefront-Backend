@@ -15,7 +15,7 @@ export type User = {
     id?: number;
     first_name: string;
     last_name: string;
-    password_digest: string; // using _ to match name in POSTGRES table    
+    password_digest: string; // using _ to match name in POSTGRES table
 };
 
 export class UserStore {
@@ -52,14 +52,20 @@ export class UserStore {
                 u.password_digest + pepper,
                 parseInt(saltRounds)
             );
-            const result = await conn.query(sql, [u.first_name, u.last_name, hash]);
+            const result = await conn.query(sql, [
+                u.first_name,
+                u.last_name,
+                hash
+            ]);
             conn.release();
             return result.rows[0];
         } catch (err) {
-            throw new Error(`Cannot add new user ${u.first_name} ${u.last_name}. Error: ${err}`);
+            throw new Error(
+                `Cannot add new user ${u.first_name} ${u.last_name}. Error: ${err}`
+            );
         }
     }
-    
+
     // returns a JWT if a user authenticates correctly (i.e., bcrypt'd plain text passord matches password digest in the database)
     async authenticate(
         firstName: string,
@@ -68,7 +74,8 @@ export class UserStore {
     ): Promise<string | null> {
         try {
             const conn = await Client.connect();
-            const sql = 'SELECT * FROM users WHERE first_name=($1) and last_name=($2)';
+            const sql =
+                'SELECT * FROM users WHERE first_name=($1) and last_name=($2)';
             const result = await conn.query(sql, [firstName, lastName]);
             conn.release();
             if (result.rows.length) {
@@ -94,5 +101,5 @@ export class UserStore {
             );
         }
         return null;
-    }    
+    }
 }

@@ -35,10 +35,12 @@ describe('User model', () => {
         newUser = (await store.create(myUser)) as User;
         expect(newUser.first_name).toEqual(myUser.first_name);
         expect(newUser.last_name).toEqual(myUser.last_name);
-        expect(bcrypt.compareSync(
-            myUser.password_digest + pepper,
-            newUser.password_digest
-        )).toBeTruthy();        
+        expect(
+            bcrypt.compareSync(
+                myUser.password_digest + pepper,
+                newUser.password_digest
+            )
+        ).toBeTruthy();
     });
     // show
     it('should have a show method', () => {
@@ -53,7 +55,11 @@ describe('User model', () => {
         expect(store.authenticate).toBeDefined();
     });
     it('authenticate should validate password', async () => {
-        const result = await store.authenticate(myUser.first_name, myUser.last_name, myUser.password_digest);
+        const result = await store.authenticate(
+            myUser.first_name,
+            myUser.last_name,
+            myUser.password_digest
+        );
         expect(result).toBeTruthy(); // not null means authenticated
-    });    
+    });
 });

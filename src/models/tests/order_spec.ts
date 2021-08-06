@@ -3,14 +3,17 @@ import { OrderStore, Order } from '../order';
 // 1-the user_id in an order is a foreign key referring a user Id
 // 2-I want this file to be self-contained in terms of database content, and not rely on users
 //    being added in other tests
-
 import { UserStore, User } from '../user';
+// for the same reason, we need a category and product on order to test addProduct
+import { CategoryStore, Category } from '../category';
+import { ProductStore, Product } from '../product';
 
 const store = new OrderStore();
 const userStore = new UserStore();
+const categoryStore = new CategoryStore();
+const productStore = new ProductStore();
 
 describe('Order model', () => {
-
     // First, create user since a valid user_id is required for festing orders
     const myUser: User = {
         id: 0, // clearly invalid value to make sure it is never used
@@ -29,9 +32,9 @@ describe('Order model', () => {
     // Third, create second order
     let myOtherOrder: Order = {
         user_id: 0,
-        status :'active'
-    }
-    
+        status: 'active'
+    };
+
     it('PREAMBLE: create a new user to have a valid user_id', async () => {
         newUser = (await userStore.create(myUser)) as User;
         expect(newUser.id).not.toEqual(myUser.id); // id has to change
@@ -41,7 +44,7 @@ describe('Order model', () => {
         // update orders
         myOrder.user_id = newUser.id as number;
         newOrder = myOrder;
-    });   
+    });
 
     // Now we can test the order methods
 
@@ -53,7 +56,7 @@ describe('Order model', () => {
         const result = await store.index();
         expect(result).toEqual([]);
     });
-    
+
     // create
     it('should have a create method', () => {
         expect(store.create).toBeDefined();
@@ -61,7 +64,7 @@ describe('Order model', () => {
     it('create method should return the object inserted', async () => {
         console.log('order = ', newOrder);
         newOrder = (await store.create(myOrder.user_id)) as Order;
-        expect(newOrder).toEqual(myOrder);        
+        expect(newOrder).toEqual(myOrder);
     });
 
     // show (by order id)
@@ -100,42 +103,47 @@ describe('Order model', () => {
     it('showCompleteByUserId method should return a list of one order with status complete', async () => {
         const result = await store.showCompleteByUserId(newOrder.user_id as number);
         // no need of a loop for just one but could be extended easily that way
-        result.forEach(order => {
+        result.forEach((order) => {
             expect(order.id).toEqual(newOrder.id);
             expect(order.user_id).toEqual(newOrder.user_id);
             expect(order.status).toEqual('complete');
-        });        
+        });
     });
     it('showCompleteByUserId method should return a list of two orders with status complete', async () => {
         // put other order in the database
         myOtherOrder.user_id = newOrder.user_id;
         let newOtherOrder = (await store.create(myOtherOrder.user_id)) as Order;
         // set it to complete
-        newOtherOrder =  await store.complete(newOtherOrder.id as number);
+        newOtherOrder = await store.complete(newOtherOrder.id as number);
         // find all complete orders - there should be 2
         const result = await store.showCompleteByUserId(newOrder.user_id as number);
         expect(result.length).toEqual(2);
         // no need of a loop for just one but could be extended easily that way
         const newOrders = [newOrder, newOtherOrder];
-        // expect the same number of orders        
-        result.forEach( (res, index) => {
+        // expect the same number of orders
+        result.forEach((res, index) => {
             expect(res.id).toEqual(newOrders[index].id);
             expect(res.user_id).toEqual(newOrders[index].user_id);
             expect(res.status).toEqual('complete');
-        });        
+        });
     });
 
-    // addProduct - TEST AFTER PRODUCT
-    // it('should have an addProduct method', () => {
-    //     expect(store.addProduct).toBeDefined();
-    // });
-    // it('addProduct should return correct values of id, quantity, order_id and product_id', async () => {
-    //     const quantity = 2;
-    //     const product_id = 3;
-    //     const result = await store.addProduct(quantity, myOrder.id as number, product_id);
-    //     expect(result.id).toEqual(1);
-    //     expect(result.quantity).toEqual(quantity);
-    //     expect(result.order_id).toEqual(myOrder.id as number);
-    //     expect(result.product_id).toEqual(product_id);
-    // });    
+    // addProduct
+    it('should have an addProduct method', () => {
+        expect(store.addProduct).toBeDefined();
+    });
+    it('addProduct should return correct values of id, quantity, order_id and product_id', async () => {
+        const myCategory = await categoryStore.create('cake');
+        const myProduct = (await productStore.create({
+            name: 'Chocolate',
+            price: 2,
+            category: 'cake'
+        })) as Product; // in all orders
+        const quantity = 2;
+        const result = await store.addProduct(quantity, myOrder.id as number, myProduct.id as number);
+        expect(result.id).toEqual(1);
+        expect(result.quantity).toEqual(quantity);
+        expect(result.order_id).toEqual(myOrder.id as number);
+        expect(result.product_id).toEqual(myProduct.id as number);
+    });
 });
