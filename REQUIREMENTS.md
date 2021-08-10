@@ -5,14 +5,24 @@ These are the notes from a meeting with the frontend developer that describe wha
 
 ## API Endpoints
 
+#### Categories routes
+
+ROUTE                                   | Endpoint                      | HTTP verb     | Token required?       | Arguments
+-----                                   | --------                      | ---------     | ------                | ---------
+INDEX                                   | '/categories'                 | [GET]         |                       |
+SHOW                                    | '/categories/:id'             | [GET]         |                       |
+CREATE                                  | '/categories'                 | [POST]        | yes                   | name
+DELETE                                  | '/categories'                 | [DELETE]      | yes                   | name
+
 #### Products routes
 ROUTE                                   | Endpoint                      | HTTP verb     | Token required?       | Arguments
 -----                                   | --------                      | ---------     | ------                | ---------
 INDEX                                   | '/products'                   | [GET]         |                       |
 SHOW                                    | '/products/:id'               | [GET]         |                       |
-CREATE                                  | '/products'                   | [POST]        | yes                   |
+CREATE                                  | '/products'                   | [POST]        | yes                   | name, price, category
+DELETE                                  | '/products'                   | [DELETE]      | yes                   | id
+Products by category                    | '/products-by-category        | [GET]         |                       | category
 [OPTIONAL] Top 5 most popular products  | '/products-top-5'             | [GET]         |                       |
-[OPTIONAL] Products by category         | '/products-by-category        | [GET]         |                       | product category
 
 #### Users routes
 ROUTE                                   | Endpoint                      | HTTP verb     | Token required?       | Arguments
