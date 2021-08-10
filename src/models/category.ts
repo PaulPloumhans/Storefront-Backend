@@ -46,15 +46,15 @@ export class CategoryStore {
         }
     }
 
-    async delete(id: number): Promise<Category> {
+    async delete(name: string): Promise<Category> {
         try {
             const conn = await Client.connect();
-            const sql = 'DELETE FROM categories WHERE id=($1) RETURNING *';
-            const result = await conn.query(sql, [id]);
+            const sql = 'DELETE FROM categories WHERE name=($1) RETURNING *';
+            const result = await conn.query(sql, [name]);
             conn.release();
             return result.rows[0];
         } catch (err) {
-            throw new Error('Cannot delete category ${id}. Error: ${err}');
+            throw new Error(`Cannot delete category ${name}. Error: ${err}`);
         }
     }
 }

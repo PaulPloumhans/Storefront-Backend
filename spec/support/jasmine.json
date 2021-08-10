@@ -1,12 +1,7 @@
 {
   "spec_dir": "spec",
   "spec_files": [
-    "../src/models/tests/category_spec.ts",
-    "../src/models/tests/user_spec.ts",
-    "../src/models/tests/product_spec.ts",
-    "../src/models/tests/order_spec.ts",
-    "../src/models/tests/*[s]pec.ts",
-    "../src/services/tests/dashboard_spec.ts"
+    "../src/handlers/tests/*[s]pec.ts"
   ],
   "helpers": [
     "helpers/**/*.ts"
