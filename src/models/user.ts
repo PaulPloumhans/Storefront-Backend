@@ -46,59 +46,46 @@ export class UserStore {
     async create(u: User): Promise<User> {
         try {
             const conn = await Client.connect();
-            const sql =
-                'INSERT INTO users (first_name, last_name, password_digest) VALUES($1, $2, $3) RETURNING *';
-            const hash = bcrypt.hashSync(
-                u.password_digest + pepper,
-                parseInt(saltRounds)
-            );
-            const result = await conn.query(sql, [
-                u.first_name,
-                u.last_name,
-                hash
-            ]);
+            const sql = 'INSERT INTO users (first_name, last_name, password_digest) VALUES($1, $2, $3) RETURNING *';
+            const hash = bcrypt.hashSync(u.password_digest + pepper, parseInt(saltRounds));
+            const result = await conn.query(sql, [u.first_name, u.last_name, hash]);
             conn.release();
             return result.rows[0];
         } catch (err) {
-            throw new Error(
-                `Cannot add new user ${u.first_name} ${u.last_name}. Error: ${err}`
-            );
+            throw new Error(`Cannot add new user ${u.first_name} ${u.last_name}. Error: ${err}`);
+        }
+    }
+
+    async delete(id: number): Promise<User> {
+        try {
+            const conn = await Client.connect();
+            const sql = 'DELETE FROM users WHERE id=($1) RETURNING *';
+            const result = await conn.query(sql, [id]);
+            conn.release();
+            return result.rows[0];
+        } catch (err) {
+            throw new Error(`Cannot delete user ${id}. Error: ${err}`);
         }
     }
 
     // returns a JWT if a user authenticates correctly (i.e., bcrypt'd plain text passord matches password digest in the database)
-    async authenticate(
-        firstName: string,
-        lastName: string,
-        plainTextPassword: string
-    ): Promise<string | null> {
+    async authenticate(firstName: string, lastName: string, plainTextPassword: string): Promise<string | null> {
         try {
             const conn = await Client.connect();
-            const sql =
-                'SELECT * FROM users WHERE first_name=($1) and last_name=($2)';
+            const sql = 'SELECT * FROM users WHERE first_name=($1) and last_name=($2)';
             const result = await conn.query(sql, [firstName, lastName]);
             conn.release();
             if (result.rows.length) {
                 const user = result.rows[0] as User;
-                if (
-                    bcrypt.compareSync(
-                        plainTextPassword + pepper,
-                        user.password_digest
-                    )
-                ) {
-                    const token = jwt.sign(
-                        { user: user },
-                        process.env.TOKEN_SECRET as string
-                    );
+                if (bcrypt.compareSync(plainTextPassword + pepper, user.password_digest)) {
+                    const token = jwt.sign({ user: user }, process.env.TOKEN_SECRET as string);
                     return token;
                 }
             } else {
                 return null;
             }
         } catch (err) {
-            throw new Error(
-                `Cannot authenticate user ${firstName} ${lastName} . Error: ${err}`
-            );
+            throw new Error(`Cannot authenticate user ${firstName} ${lastName} . Error: ${err}`);
         }
         return null;
     }
