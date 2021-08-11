@@ -30,12 +30,18 @@ ROUTE                                   | Endpoint                      | HTTP v
 INDEX                                   | '/users'                      | [GET]         | yes                   |
 SHOW                                    | '/users/:id'                  | [GET]         | yes                   |
 CREATE                                  | '/users'                      | [POST]        | yes                   |
+DELETE                                  | '/users'                      | [DELETE]      | yes                   | id
+Authenticate user                       | '/users/authenticate          | [POST]        |                       | first_name, last_name, password
 
 #### Orders routes
 ROUTE                                   | Endpoint                      | HTTP verb     | Token required?       | Arguments
 -----                                   | --------                      | ---------     | ------                | ---------
-Current order by user                   | '/orders'                     | [GET]         | yes                   | user id
-[OPTIONAL] Completed orders by user     | '/completed-orders-by-user'   | [GET]         | yes                   | user id
+INDEX                                   | '/orders'                     | [GET]         | yes                   |
+SHOW                                    | '/orders/:id'                 | [GET]         | yes                   |
+CREATE                                  | '/orders'                     | [POST]        | yes                   |
+DELETE                                  | '/orders'                     | [DELETE]      | yes                   | id
+Current order by user                   | '/orders/active               | [GET]         | yes                   | user_id
+Completed orders by user                | '/orders/completed            | [GET]         | yes                   | user_id
 
 ## Data Shapes
 
