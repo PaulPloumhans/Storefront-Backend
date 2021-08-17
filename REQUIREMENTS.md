@@ -40,8 +40,9 @@ INDEX                                   | '/orders'                     | [GET] 
 SHOW                                    | '/orders/:id'                 | [GET]         | yes                   |
 CREATE                                  | '/orders'                     | [POST]        | yes                   |
 DELETE                                  | '/orders'                     | [DELETE]      | yes                   | id
-Current order by user                   | '/orders/active               | [GET]         | yes                   | user_id
-Completed orders by user                | '/orders/completed            | [GET]         | yes                   | user_id
+Complete                                | '/orders/complete             | [POST]        | yes                   | id
+Current order by user                   | '/orders-current-by-userid    | [GET]         | yes                   | user_id
+Completed orders by user                | '/orders-complete-by-userid   | [GET]         | yes                   | user_id
 
 ## Data Shapes
 
