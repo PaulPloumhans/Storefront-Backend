@@ -33,56 +33,59 @@ export class OrderStore {
         }
     }
 
-    async showByUserId(userId: number): Promise<Order> {
+    async showCurrentByUserId(userId: number): Promise<Order> {
         try {
             const conn = await Client.connect();
-            const sql =
-                'SELECT * FROM orders WHERE user_id=($1) AND status=($2)';
+            const sql = 'SELECT * FROM orders WHERE user_id=($1) AND status=($2)';
             const result = await conn.query(sql, [userId, 'active']);
             conn.release();
             return result.rows[0];
         } catch (err) {
-            throw new Error(
-                `Cannot find order for user ${userId}. Error: ${err}`
-            );
+            throw new Error(`Cannot find order for user ${userId}. Error: ${err}`);
         }
     }
 
     async showCompleteByUserId(userId: number): Promise<Order[]> {
         try {
             const conn = await Client.connect();
-            const sql =
-                'SELECT * FROM orders WHERE user_id=($1) AND status=($2)';
+            const sql = 'SELECT * FROM orders WHERE user_id=($1) AND status=($2)';
             const result = await conn.query(sql, [userId, 'complete']);
             conn.release();
             return result.rows;
         } catch (err) {
-            throw new Error(
-                `Cannot find order for user ${userId}. Error: ${err}`
-            );
+            throw new Error(`Cannot find order for user ${userId}. Error: ${err}`);
         }
     }
 
     async create(userId: number): Promise<Order> {
         try {
             const conn = await Client.connect();
-            const sql =
-                'INSERT INTO orders (status, user_id) VALUES($1, $2) RETURNING *';
+            const sql = 'INSERT INTO orders (status, user_id) VALUES($1, $2) RETURNING *';
             const result = await conn.query(sql, ['active', userId]);
             conn.release();
             return result.rows[0];
         } catch (err) {
-            throw new Error(
-                `Cannot add new order for user ${userId}. Error: ${err}`
-            );
+            throw new Error(`Cannot add new order for user ${userId}. Error: ${err}`);
         }
     }
 
-    async complete(id: number): Promise<Order> {
+    async delete(id: number): Promise<Order> {
         try {
             const conn = await Client.connect();
-            const sql =
-                'UPDATE orders SET status = ($1) WHERE id = ($2) RETURNING *';
+            const sql = 'DELETE FROM orders WHERE id=($1) RETURNING *';
+            const result = await conn.query(sql, [id]);
+            conn.release();
+            return result.rows[0];
+        } catch (err) {
+            throw new Error(`Cannot delete order ${id}. Error: ${err}`);
+        }
+    }
+
+    // set status to complete based on order id
+    async setComplete(id: number): Promise<Order> {
+        try {
+            const conn = await Client.connect();
+            const sql = 'UPDATE orders SET status = ($1) WHERE id = ($2) RETURNING *';
             const result = await conn.query(sql, ['complete', id]);
             conn.release();
             return result.rows[0];
@@ -104,19 +107,12 @@ export class OrderStore {
     }> {
         try {
             const conn = await Client.connect();
-            const sql =
-                'INSERT INTO order_products (quantity, order_id, product_id) VALUES($1, $2, $3) RETURNING *';
-            const result = await conn.query(sql, [
-                quantity,
-                orderId,
-                productId
-            ]);
+            const sql = 'INSERT INTO order_products (quantity, order_id, product_id) VALUES($1, $2, $3) RETURNING *';
+            const result = await conn.query(sql, [quantity, orderId, productId]);
             conn.release();
             return result.rows[0];
         } catch (err) {
-            throw new Error(
-                `Cannot add product ${productId} to order ${orderId}. Error: ${err}`
-            );
+            throw new Error(`Cannot add product ${productId} to order ${orderId}. Error: ${err}`);
         }
     }
 }

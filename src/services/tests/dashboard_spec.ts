@@ -17,7 +17,7 @@ describe('Testing top 5 most popular prouducts', () => {
     let product_4: Product;
     let product_5: Product;
     let product_6: Product;
-    // st up the stage
+    // set up the stage
     beforeAll(async () => {
         // Create 2 categories
         // create Category for insertion and deletion
