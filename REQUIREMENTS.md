@@ -5,7 +5,10 @@ These are the notes from a meeting with the frontend developer that describe wha
 
 ## API Endpoints
 
+Note: endpoints initially maked as optional have an asterisk (*). Endpoints that were added for completeness have two asterisks (**).
+
 #### Categories routes
+This is a category that was initially optional.
 
 ROUTE                                   | Endpoint                      | HTTP verb     | Token required?       | Arguments
 -----                                   | --------                      | ---------     | ------                | ---------
@@ -20,9 +23,9 @@ ROUTE                                   | Endpoint                      | HTTP v
 INDEX                                   | '/products'                   | [GET]         |                       |
 SHOW                                    | '/products/:id'               | [GET]         |                       |
 CREATE                                  | '/products'                   | [POST]        | yes                   | name, price, category
-DELETE                                  | '/products'                   | [DELETE]      | yes                   | id
-Products by category                    | '/products-by-category        | [GET]         |                       | category
-[OPTIONAL] Top 5 most popular products  | '/products-top-5'             | [GET]         |                       |
+DELETE**                                | '/products'                   | [DELETE]      | yes                   | id
+Products by category*                   | '/products-by-category        | [GET]         |                       | category_id
+Top 5 most popular products*            | '/products-top-5'             | [GET]         |                       |
 
 #### Users routes
 ROUTE                                   | Endpoint                      | HTTP verb     | Token required?       | Arguments
@@ -30,35 +33,31 @@ ROUTE                                   | Endpoint                      | HTTP v
 INDEX                                   | '/users'                      | [GET]         | yes                   |
 SHOW                                    | '/users/:id'                  | [GET]         | yes                   |
 CREATE                                  | '/users'                      | [POST]        |                       |
-DELETE                                  | '/users'                      | [DELETE]      | yes                   | id
-Authenticate user                       | '/users/authenticate          | [POST]        |                       | first_name, last_name, password
+DELETE**                                | '/users'                      | [DELETE]      | yes                   | id
+Authenticate user**                     | '/users/authenticate          | [POST]        |                       | first_name, last_name, password
 
 #### Orders routes
 ROUTE                                   | Endpoint                      | HTTP verb     | Token required?       | Arguments
 -----                                   | --------                      | ---------     | ------                | ---------
-INDEX                                   | '/orders'                     | [GET]         | yes                   |
-SHOW                                    | '/orders/:id'                 | [GET]         | yes                   |
-CREATE                                  | '/orders'                     | [POST]        | yes                   | user_id
-DELETE                                  | '/orders'                     | [DELETE]      | yes                   | id
-Complete                                | '/orders/complete             | [POST]        | yes                   | id
+INDEX**                                 | '/orders'                     | [GET]         | yes                   |
+SHOW**                                  | '/orders/:id'                 | [GET]         | yes                   |
+CREATE**                                | '/orders'                     | [POST]        | yes                   | user_id
+DELETE**                                | '/orders'                     | [DELETE]      | yes                   | id
+Complete**                              | '/orders/complete             | [POST]        | yes                   | id
 Current order by user                   | '/orders-current-by-userid    | [GET]         | yes                   | user_id
-Completed orders by user                | '/orders-complete-by-userid   | [GET]         | yes                   | user_id
+Completed orders by user*               | '/orders-complete-by-userid   | [GET]         | yes                   | user_id
 
 ## Data Shapes
 
-### Category
+#### Category
 
->Table: categories(
-    id SERIAL PRIMARY KEY, name VARCHAR(100) NOT NULL UNIQUE
-    )
+The category SQL table is
+>TABLE categories (id SERIAL PRIMARY KEY, name VARCHAR(100) NOT NULL UNIQUE);
     
 #### Product
->Table: products(
-        id:serial primary key,
-        name: varchar(100) not null,
-        price: real not null,
-        category: varchar(100) references categories(name)[foreign key to categories table]
-        )
+
+The product SQL table is
+>TABLE products (id SERIAL PRIMARY KEY, name VARCHAR(100) NOT NULL, price real NOT NULL, category VARCHAR(100) references categories(name));
         
 To implement:
 - id
@@ -67,34 +66,29 @@ To implement:
 - [OPTIONAL] category
 
 #### User
->Table: users (
-    id:serial primary key,
-    firstName: varchar(100),
-    lastName: varchar(100),
-    password_digest: text
-    )
-    
+
+The user SQL table is
+>TABLE users (id SERIAL PRIMARY KEY, first_name VARCHAR(100) NOT NULL, last_name VARCHAR(100) NOT NULL, password_digest text, UNIQUE(first_name,last_name));
+
 To implement:    
 - id
 - firstName
 - lastName
-- password
+- password.
+
+Note (firstName, lastName) must be unique, i.e., no two identical users
 
 #### Orders
->Table: orders(
-    id:serial primary key,
-    user_id: integer references users(id)[foreign key to users table],
-    status: varchar(10) not null
-    )
- >   
- >Table: order_products(
-    id:serial primary key,
-    quantity: integer,
-    order_id: integer references orders(id)[foreign key to orders table],
-    user_id: integer references users(id)[foreign key to users table]
-    )
 
-To implement:
+Two tables are used.
+
+The first SQL table contains orders
+>TABLE orders (id SERIAL PRIMARY KEY, user_id integer references users(id), status varchar(10) NOT NULL);
+
+The second TABLE contains all items of all orders 
+>TABLE order_products(id SERIAL PRIMARY KEY, quantity integer, order_id integer references orders(id), product_id integer references products(id))
+
+Together, these tables implement
 - id
 - id of each product in the order
 - quantity of each product in the order
