@@ -12,7 +12,7 @@ ROUTE                                   | Endpoint                      | HTTP v
 INDEX                                   | '/categories'                 | [GET]         |                       |
 SHOW                                    | '/categories/:id'             | [GET]         |                       |
 CREATE                                  | '/categories'                 | [POST]        | yes                   | name
-DELETE                                  | '/categories'                 | [DELETE]      | yes                   | name
+DELETE                                  | '/categories'                 | [DELETE]      | yes                   | id
 
 #### Products routes
 ROUTE                                   | Endpoint                      | HTTP verb     | Token required?       | Arguments
