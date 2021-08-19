@@ -12,7 +12,7 @@ ROUTE                                   | Endpoint                      | HTTP v
 INDEX                                   | '/categories'                 | [GET]         |                       |
 SHOW                                    | '/categories/:id'             | [GET]         |                       |
 CREATE                                  | '/categories'                 | [POST]        | yes                   | name
-DELETE                                  | '/categories'                 | [DELETE]      | yes                   | name
+DELETE                                  | '/categories'                 | [DELETE]      | yes                   | id
 
 #### Products routes
 ROUTE                                   | Endpoint                      | HTTP verb     | Token required?       | Arguments
@@ -29,7 +29,7 @@ ROUTE                                   | Endpoint                      | HTTP v
 -----                                   | --------                      | ---------     | ------                | ---------
 INDEX                                   | '/users'                      | [GET]         | yes                   |
 SHOW                                    | '/users/:id'                  | [GET]         | yes                   |
-CREATE                                  | '/users'                      | [POST]        | yes                   |
+CREATE                                  | '/users'                      | [POST]        |                       |
 DELETE                                  | '/users'                      | [DELETE]      | yes                   | id
 Authenticate user                       | '/users/authenticate          | [POST]        |                       | first_name, last_name, password
 
@@ -38,7 +38,7 @@ ROUTE                                   | Endpoint                      | HTTP v
 -----                                   | --------                      | ---------     | ------                | ---------
 INDEX                                   | '/orders'                     | [GET]         | yes                   |
 SHOW                                    | '/orders/:id'                 | [GET]         | yes                   |
-CREATE                                  | '/orders'                     | [POST]        | yes                   |
+CREATE                                  | '/orders'                     | [POST]        | yes                   | user_id
 DELETE                                  | '/orders'                     | [DELETE]      | yes                   | id
 Complete                                | '/orders/complete             | [POST]        | yes                   | id
 Current order by user                   | '/orders-current-by-userid    | [GET]         | yes                   | user_id
