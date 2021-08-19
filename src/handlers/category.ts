@@ -50,10 +50,8 @@ const verifyAuthToken = (req: Request, res: Response, next: () => void) => {
 const categoryRoutes = (app: express.Application): void => {
     app.get('/categories', index);
     app.get('/categories/:id', show);
-    // app.post('/categories', verifyAuthToken, create);
-    app.post('/categories', create);
-    // app.delete('/categories', verifyAuthToken, destroy);
-    app.delete('/categories', destroy);
+    app.post('/categories', verifyAuthToken, create);
+    app.delete('/categories', verifyAuthToken, destroy);
 };
 
 export default categoryRoutes;

@@ -1,3 +1,5 @@
+import supertest from 'supertest';
+import app from '../../server';
 import { OrderProductStore, OrderProduct } from '../../models/order_product';
 import { UserStore, User } from '../../models/user';
 import { CategoryStore, Category } from '../../models/category';
@@ -12,7 +14,9 @@ const categoryStore = new CategoryStore();
 const productStore = new ProductStore();
 const dashboard = new DashboardQueries();
 
-describe('Testing top 5 most popular products', () => {
+const request = supertest(app);
+
+describe('api endpoint top 5 most popular products testing', () => {
     let category_1: Category;
     let category_2: Category;
     let product_1: Product;
@@ -125,14 +129,14 @@ describe('Testing top 5 most popular products', () => {
         await userStore.delete(user_2.id as number);
     });
 
-    // Now we can test the productsTop5Order method
-    it('productsTop5Order method should return orders 1, 2, 3, 4 and 6', async () => {
-        const res = await dashboard.productsTop5Order();
-        // check that 5 orders were found
-        expect(res.length).toEqual(5);
+    // first create three orders: first two for user_1, third one for user_2
+    it('Top 5 most popular products route - test GET on /products-top-5', async () => {
+        let res = await request.get('/products-top-5');
+        expect(res.status).toEqual(200);
+        expect(res.body.length).toEqual(5);
         // extract productsIds
         let productIds: number[] = [];
-        res.forEach((elem) => {
+        res.body.forEach((elem: { product_id: number; count: number }) => {
             productIds.push(elem.product_id);
         });
         // check that the right orders were found

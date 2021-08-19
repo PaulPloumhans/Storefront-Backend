@@ -58,7 +58,6 @@ const complete = async (req: Request, res: Response) => {
 
 const current = async (req: Request, res: Response) => {
     try {
-        console.log('current -> req.body = ', req.body);
         const order = await store.showCurrentByUserId(req.body.user_id);
         res.json(order);
     } catch (err) {
@@ -79,15 +78,13 @@ const verifyAuthToken = (req: Request, res: Response, next: () => void) => {
 };
 
 const orderRoutes = (app: express.Application): void => {
-    app.get('/orders', index);
-    app.get('/orders/:id', show);
-    // app.post('/orders', verifyAuthToken, create);
-    app.post('/orders', create);
-    // app.delete('/orders', verifyAuthToken, destroy);
-    app.delete('/orders', destroy);
-    app.get('/orders-current-by-userid', current);
-    app.get('/orders-complete-by-userid', complete);
-    app.post('/orders/complete', setComplete);
+    app.get('/orders', verifyAuthToken, index);
+    app.get('/orders/:id', verifyAuthToken, show);
+    app.post('/orders', verifyAuthToken, create);
+    app.delete('/orders', verifyAuthToken, destroy);
+    app.get('/orders-current-by-userid', verifyAuthToken, current);
+    app.get('/orders-complete-by-userid', verifyAuthToken, complete);
+    app.post('/orders/complete', verifyAuthToken, setComplete);
 };
 
 export default orderRoutes;

@@ -1,29 +1,56 @@
 import supertest from 'supertest';
+import { CategoryStore, Category } from '../../models/category';
+import { UserStore, User } from '../../models/user';
 import app from '../../server';
 
 const request = supertest(app);
 
+const userStore = new UserStore();
+const categoryStore = new CategoryStore();
+
 describe('api endpoint product testing', () => {
     // create two categories
-    let id_product_1 = -1; // id of newly inserted product, to be updated
-    let id_product_2 = -1; // id of newly inserted product, to be updated
+    let id_product_1: number;
+    let id_product_2: number;
+    let user_1: User;
+    let token_1: string;
+    let category_1: Category;
+    let category_2: Category;
+
     beforeAll(async () => {
-        let res = await request.post('/categories').send({ name: 'book' });
-        expect(res.status).toEqual(200);
-        expect(res.body.name).toEqual('book');
-        res = await request.post('/categories').send({ name: 'DVD' });
-        expect(res.status).toEqual(200);
-        expect(res.body.name).toEqual('DVD');
+        // create a user with its token
+        user_1 = await userStore.create({
+            first_name: 'John',
+            last_name: 'Wheeler',
+            password_digest: 'electron'
+        });
+        token_1 = (await userStore.authenticate(user_1.first_name, user_1.last_name, 'electron')) as string;
+        // create two categories
+        category_1 = (await categoryStore.create('book')) as Category;
+        category_2 = (await categoryStore.create('DVD')) as Category;
     });
+    // clean up
+    afterAll(async () => {
+        await categoryStore.delete(category_1.id as number);
+        await categoryStore.delete(category_2.id as number);
+        await userStore.delete(user_1.id as number);
+    });
+
     // first create two products
     it('CREATE route - test POST on /products', async () => {
-        let res = await request.post('/products').send({ name: 'The jungle book', price: 7.5, category: 'book' });
+        let res = await request
+            .post('/products')
+            .send({ name: 'The jungle book', price: 7.5, category: 'book' })
+            .set('Authorization', `Bearer ${token_1}`);
         expect(res.status).toEqual(200);
         expect(res.body.name).toEqual('The jungle book');
         expect(res.body.price).toEqual(7.5);
         expect(res.body.category).toEqual('book');
         id_product_1 = res.body.id;
-        res = await request.post('/products').send({ name: 'Tarzan', price: 15.0, category: 'DVD' });
+        res = await request
+            .post('/products')
+            .send({ name: 'Tarzan', price: 15.0, category: 'DVD' })
+            .set('Authorization', `Bearer ${token_1}`);
         expect(res.status).toEqual(200);
         expect(res.body.name).toEqual('Tarzan');
         expect(res.body.price).toEqual(15.0);
@@ -61,10 +88,13 @@ describe('api endpoint product testing', () => {
 
     // delete the two products
     it('DELETE route - test DELETE on /categories', async () => {
-        let res = await request.delete('/products').send({ id: id_product_1 });
+        let res = await request
+            .delete('/products')
+            .send({ id: id_product_1 })
+            .set('Authorization', `Bearer ${token_1}`);
         expect(res.status).toEqual(200);
         expect(res.body.name).toEqual('The jungle book');
-        res = await request.delete('/products').send({ id: id_product_2 });
+        res = await request.delete('/products').send({ id: id_product_2 }).set('Authorization', `Bearer ${token_1}`);
         expect(res.status).toEqual(200);
         expect(res.body.name).toEqual('Tarzan');
         // check that there no products left

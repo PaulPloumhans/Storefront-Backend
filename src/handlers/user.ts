@@ -29,7 +29,9 @@ const create = async (req: Request, res: Response) => {
             password_digest: req.body.password
         };
         const newUser = await store.create(user);
-        res.json(newUser);
+        // get JWT
+        const token = await store.authenticate(req.body.first_name, req.body.last_name, req.body.password);
+        res.json({ user: newUser, token: token });
     } catch (err) {
         res.status(400);
         res.json(err);
@@ -63,12 +65,10 @@ const verifyAuthToken = (req: Request, res: Response, next: () => void) => {
 };
 
 const userRoutes = (app: express.Application): void => {
-    app.get('/users', index);
-    app.get('/users/:id', show);
-    // app.post('/users', verifyAuthToken, create);
+    app.get('/users', verifyAuthToken, index);
+    app.get('/users/:id', verifyAuthToken, show);
     app.post('/users', create);
-    // app.delete('/users', verifyAuthToken, destroy);
-    app.delete('/users', destroy);
+    app.delete('/users', verifyAuthToken, destroy);
     app.post('/users/authenticate', authenticate);
 };
 
