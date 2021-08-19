@@ -38,7 +38,7 @@ ROUTE                                   | Endpoint                      | HTTP v
 -----                                   | --------                      | ---------     | ------                | ---------
 INDEX                                   | '/orders'                     | [GET]         | yes                   |
 SHOW                                    | '/orders/:id'                 | [GET]         | yes                   |
-CREATE                                  | '/orders'                     | [POST]        | yes                   |
+CREATE                                  | '/orders'                     | [POST]        | yes                   | user_id
 DELETE                                  | '/orders'                     | [DELETE]      | yes                   | id
 Complete                                | '/orders/complete             | [POST]        | yes                   | id
 Current order by user                   | '/orders-current-by-userid    | [GET]         | yes                   | user_id
