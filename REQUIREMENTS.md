@@ -29,7 +29,7 @@ ROUTE                                   | Endpoint                      | HTTP v
 -----                                   | --------                      | ---------     | ------                | ---------
 INDEX                                   | '/users'                      | [GET]         | yes                   |
 SHOW                                    | '/users/:id'                  | [GET]         | yes                   |
-CREATE                                  | '/users'                      | [POST]        | yes                   |
+CREATE                                  | '/users'                      | [POST]        |                       |
 DELETE                                  | '/users'                      | [DELETE]      | yes                   | id
 Authenticate user                       | '/users/authenticate          | [POST]        |                       | first_name, last_name, password
 
