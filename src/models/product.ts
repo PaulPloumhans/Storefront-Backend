@@ -1,6 +1,6 @@
 import Client from '../database';
 
-// CREATE TABLE products (id SERIAL PRIMARY KEY, name VARCHAR(100) NOT NULL, price integer NOT NULL );
+// CREATE TABLE products (id SERIAL PRIMARY KEY, name VARCHAR(100) NOT NULL, price real NOT NULL, category VARCHAR(100) references categories(name));
 
 // define TypeScript type for Product
 export type Product = {

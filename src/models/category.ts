@@ -1,7 +1,7 @@
 import Client from '../database';
 
 // Migration up command to create the table in POSTGRES
-// CREATE TABLE users (id SERIAL PRIMARY KEY, firstName VARCHAR(100) NOT NULL, lastName VARCHAR(100) NOT NULL, password_digest text, UNIQUE(firstName,lastName))
+// CREATE TABLE categories (id SERIAL PRIMARY KEY, name VARCHAR(100) NOT NULL UNIQUE);
 
 // define TypeScript type for Order
 export type Category = {
@@ -46,15 +46,15 @@ export class CategoryStore {
         }
     }
 
-    async delete(name: string): Promise<Category> {
+    async delete(id: number): Promise<Category> {
         try {
             const conn = await Client.connect();
-            const sql = 'DELETE FROM categories WHERE name=($1) RETURNING *';
-            const result = await conn.query(sql, [name]);
+            const sql = 'DELETE FROM categories WHERE id=($1) RETURNING *';
+            const result = await conn.query(sql, [id]);
             conn.release();
             return result.rows[0];
         } catch (err) {
-            throw new Error(`Cannot delete category ${name}. Error: ${err}`);
+            throw new Error(`Cannot delete category ${id}. Error: ${err}`);
         }
     }
 }

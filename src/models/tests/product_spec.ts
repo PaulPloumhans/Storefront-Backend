@@ -11,23 +11,34 @@ const categoryStore = new CategoryStore();
 
 describe('Product model', () => {
     // First, create category since a valid category name is required for testing products
-    const myCategory: Category = {
-        id: 0, // clearly invalid value to make sure it is never used
-        name: 'DVD'
-    };
     const categoryName = 'DVD';
+    let newCategory: Category;
+
     // Second, create product for insertion and deletion
     let myProduct: Product = {
-        id: 1, // this will not be used, but since it's the first insertion it should be one
         name: 'Rocky I',
         price: 15.0,
         category: categoryName
     };
-    let newProduct = myProduct;
+    let newProduct: Product;
 
-    it('PREAMBLE: should be able to create a new category to have a valid category name', async () => {
-        const newCategory = (await categoryStore.create(categoryName)) as Category;
+    // Create a second product
+    const myOtherProduct: Product = {
+        name: 'Rocky II',
+        price: 13.0,
+        category: categoryName
+    };
+    let newOtherProduct: Product;
+
+    // create new Category otherwise it is not possible to create products
+    beforeAll(async () => {
+        newCategory = (await categoryStore.create(categoryName)) as Category;
         expect(newCategory.name).toEqual(categoryName);
+    });
+
+    // clean up the mess - delete added category
+    afterAll(async () => {
+        await categoryStore.delete(newCategory.id as number);
     });
 
     // Now we can test the product methods
@@ -36,7 +47,7 @@ describe('Product model', () => {
     it('should have an index method', () => {
         expect(store.index).toBeDefined();
     });
-    it('index method should return a list of products', async () => {
+    it('index method should return an empty list of products', async () => {
         const result = await store.index();
         expect(result).toEqual([]);
     });
@@ -47,7 +58,9 @@ describe('Product model', () => {
     });
     it('create method should return the object inserted', async () => {
         newProduct = (await store.create(myProduct)) as Product;
-        expect(newProduct).toEqual(myProduct);
+        expect(newProduct.name).toEqual(myProduct.name);
+        expect(newProduct.price).toEqual(myProduct.price);
+        expect(newProduct.category).toEqual(myProduct.category);
     });
 
     // show (by product id)
@@ -74,14 +87,7 @@ describe('Product model', () => {
         });
     });
     it('showByCategory method should return a list of two products', async () => {
-        // put other product in the database
-        const myOtherProduct: Product = {
-            id: 0,
-            name: 'Rocky II',
-            price: 13.0,
-            category: categoryName
-        };
-        let newOtherProduct = (await store.create(myOtherProduct)) as Product;
+        newOtherProduct = (await store.create(myOtherProduct)) as Product;
         // find all products in category - there should be 2
         const result = await store.showByCategory(categoryName);
         expect(result.length).toEqual(2);
@@ -93,5 +99,21 @@ describe('Product model', () => {
             expect(res.price).toEqual(newProducts[index].price);
             expect(res.category).toEqual(categoryName);
         });
+    });
+
+    // delete product
+    it('should have a delete method', () => {
+        expect(store.delete).toBeDefined();
+    });
+    it('delete method should return the object inserted previously (except status)', async () => {
+        const result = await store.delete(newProduct.id as number);
+        expect(result.id).toEqual(newProduct.id);
+        expect(result.name).toEqual(newProduct.name);
+        expect(result.price).toEqual(newProduct.price);
+    });
+    it('delete of another order should empty the order table', async () => {
+        const res_tmp = await store.delete(newOtherProduct.id as number);
+        const result = await store.index();
+        expect(result).toEqual([]);
     });
 });

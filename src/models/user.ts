@@ -15,7 +15,7 @@ export type User = {
     id?: number;
     first_name: string;
     last_name: string;
-    password_digest: string; // using _ to match name in POSTGRES table
+    password_digest: string; // bcrypt'd password stored in database
 };
 
 export class UserStore {

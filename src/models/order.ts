@@ -5,7 +5,7 @@ import Client from '../database';
 export type Order = {
     id?: number;
     user_id: number;
-    status: string; // either 'active' (at creation) or 'closed' (once OrderStore.close has been closed)
+    status: string; // either 'active' (at creation) or 'complete' (once OrderStore.setComplete has been called)
 };
 
 export class OrderStore {
@@ -91,28 +91,6 @@ export class OrderStore {
             return result.rows[0];
         } catch (err) {
             throw new Error(`Cannot complete order ${id}. Error: ${err}`);
-        }
-    }
-
-    // CREATE TABLE order_products(id SERIAL PRIMARY KEY, quantity integer, order_id integer references orders(id), product_id integer references products(id));
-    async addProduct(
-        quantity: number,
-        orderId: number,
-        productId: number
-    ): Promise<{
-        id: number;
-        quantity: number;
-        order_id: number;
-        product_id: number;
-    }> {
-        try {
-            const conn = await Client.connect();
-            const sql = 'INSERT INTO order_products (quantity, order_id, product_id) VALUES($1, $2, $3) RETURNING *';
-            const result = await conn.query(sql, [quantity, orderId, productId]);
-            conn.release();
-            return result.rows[0];
-        } catch (err) {
-            throw new Error(`Cannot add product ${productId} to order ${orderId}. Error: ${err}`);
         }
     }
 }

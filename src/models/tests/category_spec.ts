@@ -7,13 +7,12 @@ describe('Category model', () => {
     it('should have an index method', () => {
         expect(store.index).toBeDefined();
     });
-    it('index method should return a list of categories', async () => {
+    it('index method should return an empty list of categories', async () => {
         const result = await store.index();
         expect(result).toEqual([]);
     });
     // create Category for insertion and deletion
     const myCategory: Category = {
-        id: 1, // this will ot be used, but since it's the first insertion it should be one
         name: 'book'
     };
 
@@ -24,7 +23,7 @@ describe('Category model', () => {
     });
     it('create method should return the object inserted', async () => {
         newCategory = (await store.create(myCategory.name)) as Category;
-        expect(newCategory).toEqual(myCategory);
+        expect(newCategory.name).toEqual(myCategory.name);
     });
     // show
     it('should have a show method', () => {
@@ -40,9 +39,9 @@ describe('Category model', () => {
     });
     it('delete method should return the object inserted previously', async () => {
         const result = await store.delete(newCategory.id as number);
-        expect(result).toEqual(newCategory); // this hsould fail since id's won't match
+        expect(result).toEqual(newCategory);
     });
-    it('delete of last element in database should have emptied the database', async () => {
+    it('delete of unique element in category table should empty the table', async () => {
         const result = await store.index();
         expect(result).toEqual([]);
     });

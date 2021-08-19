@@ -1,9 +1,11 @@
-import { OrderStore, Order } from '../../models/order';
+import { OrderProductStore, OrderProduct } from '../../models/order_product';
 import { UserStore, User } from '../../models/user';
 import { CategoryStore, Category } from '../../models/category';
 import { ProductStore, Product } from '../../models/product';
 import { DashboardQueries } from '../../services/dashboard';
+import { OrderStore, Order } from '../../models/order';
 
+const orderProductStore = new OrderProductStore();
 const orderStore = new OrderStore();
 const userStore = new UserStore();
 const categoryStore = new CategoryStore();
@@ -11,18 +13,25 @@ const productStore = new ProductStore();
 const dashboard = new DashboardQueries();
 
 describe('Testing top 5 most popular prouducts', () => {
+    let category_1: Category;
+    let category_2: Category;
     let product_1: Product;
     let product_2: Product;
     let product_3: Product;
     let product_4: Product;
     let product_5: Product;
     let product_6: Product;
+    let user_1: User;
+    let user_2: User;
+    let order_1: Order;
+    let order_2: Order;
+    let order_3: Order;
     // set up the stage
     beforeAll(async () => {
         // Create 2 categories
         // create Category for insertion and deletion
-        const category_1 = await categoryStore.create('car');
-        const category_2 = await categoryStore.create('bike');
+        category_1 = await categoryStore.create('car');
+        category_2 = await categoryStore.create('bike');
         // Create 6 products - most popular (i.e. commonly ordered) should be 1, 2, 3, 4, 6 (not 5!)
         product_1 = (await productStore.create({
             name: 'Ferrari',
@@ -56,36 +65,71 @@ describe('Testing top 5 most popular prouducts', () => {
         })) as Product; // in orders 1 and 3
 
         // Create 2 users
-        const user_1 = await userStore.create({
+        user_1 = await userStore.create({
             first_name: 'John',
             last_name: 'Wheeler',
             password_digest: 'electron'
         });
-        const user_2 = await userStore.create({
+        user_2 = await userStore.create({
             first_name: 'Albert',
             last_name: 'Einstein',
             password_digest: 'photon'
         });
 
-        // Create 3 orders - 1 & 2 for user 1 & 3 for user 2
-        const order_1 = await orderStore.create(user_1.id as number);
-        await orderStore.addProduct(1, order_1.id as number, product_1.id as number);
-        await orderStore.addProduct(1, order_1.id as number, product_2.id as number);
-        await orderStore.addProduct(1, order_1.id as number, product_3.id as number);
-        await orderStore.addProduct(1, order_1.id as number, product_4.id as number);
-        await orderStore.addProduct(1, order_1.id as number, product_5.id as number);
-        await orderStore.addProduct(1, order_1.id as number, product_6.id as number);
+        // Create 3 orders - 1 & 2 for user 1, 3 for user 2
+        order_1 = await orderStore.create(user_1.id as number);
+        await orderProductStore.addProduct(1, order_1.id as number, product_1.id as number);
+        await orderProductStore.addProduct(1, order_1.id as number, product_2.id as number);
+        await orderProductStore.addProduct(1, order_1.id as number, product_3.id as number);
+        await orderProductStore.addProduct(1, order_1.id as number, product_4.id as number);
+        await orderProductStore.addProduct(1, order_1.id as number, product_5.id as number);
+        await orderProductStore.addProduct(1, order_1.id as number, product_6.id as number);
 
-        const order_2 = await orderStore.create(user_1.id as number);
-        await orderStore.addProduct(1, order_2.id as number, product_1.id as number);
-        await orderStore.addProduct(1, order_2.id as number, product_2.id as number);
-        await orderStore.addProduct(1, order_2.id as number, product_3.id as number);
-        await orderStore.addProduct(1, order_2.id as number, product_4.id as number);
+        order_2 = await orderStore.create(user_1.id as number);
+        await orderProductStore.addProduct(1, order_2.id as number, product_1.id as number);
+        await orderProductStore.addProduct(1, order_2.id as number, product_2.id as number);
+        await orderProductStore.addProduct(1, order_2.id as number, product_3.id as number);
+        await orderProductStore.addProduct(1, order_2.id as number, product_4.id as number);
 
-        const order_3 = await orderStore.create(user_2.id as number);
-        await orderStore.addProduct(1, order_3.id as number, product_1.id as number);
-        await orderStore.addProduct(1, order_3.id as number, product_2.id as number);
-        await orderStore.addProduct(1, order_3.id as number, product_6.id as number);
+        order_3 = await orderStore.create(user_2.id as number);
+        await orderProductStore.addProduct(1, order_3.id as number, product_1.id as number);
+        await orderProductStore.addProduct(1, order_3.id as number, product_2.id as number);
+        await orderProductStore.addProduct(1, order_3.id as number, product_6.id as number);
+    });
+
+    // clean up the mess -
+    afterAll(async () => {
+        // clean up all OrderProduct added with addProduct
+        const allOrderProducts = await orderProductStore.index();
+        // allOrderProducts.forEach(async (element, index) => {
+        //     console.log(`deleting index ${index} for element with id ${element.id}`);
+        //     await orderProductStore.delete(element.id as number);
+        // });
+        await Promise.all(
+            allOrderProducts.map(async (element) => {
+                await orderProductStore.delete(element.id as number);
+            })
+        );
+        // check that the list of OrderProduct is indeed empty
+        const res = await orderProductStore.index();
+        // res.forEach(async (element, index) => {
+        //     console.log(`not deleted index ${index} for element with id ${element.id}`);
+        // });
+        expect(res.length).toEqual(0);
+        // now delete all created objects of type category, product, user, order
+        await productStore.delete(product_1.id as number);
+        await productStore.delete(product_2.id as number);
+        await productStore.delete(product_3.id as number);
+        await productStore.delete(product_4.id as number);
+        await productStore.delete(product_5.id as number);
+        await productStore.delete(product_6.id as number);
+        await categoryStore.delete(category_1.id as number);
+        await categoryStore.delete(category_2.id as number);
+        await orderStore.delete(order_1.id as number);
+        await orderStore.delete(order_2.id as number);
+        await orderStore.delete(order_3.id as number);
+        await userStore.delete(user_1.id as number);
+        await userStore.delete(user_2.id as number);
     });
 
     // Now we can test the productsTop5Order method
