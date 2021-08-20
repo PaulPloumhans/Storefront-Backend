@@ -1,40 +1,34 @@
-# Storefront Backend Project
+#  Udacity Full Stack javascript developer - Storefront Backend
 
-## To add
--  how to set up database
+This is the second project of the UDacity Full Stack Javascript Developer Nanodegree program: Storefront Backend.
 
-## Getting Started
+It consists of an Express server, combined with a Postgres database, that exposes an API for a storefront backend. Users' passwords are stored encrypted in the database, and accessing some endpoints requires a JWT tokenare restrictedencAll functions to access the Postgres database, and all the API endpoints have associated unit tests. 
 
-This repo contains a basic Node and Express app to get you started in constructing an API. To get started, clone this repo and run `yarn` in your terminal at the project root.
+The starting point for this project is the repository available at: https://github.com/udacity/nd0067-c2-creating-an-api-with-postgresql-and-express-project-starter
 
-## Required Technologies
-Your application must make use of the following libraries:
-- Postgres for the database
-- Node/Express for the application logic
-- dotenv from npm for managing environment variables
-- db-migrate from npm for migrations
-- jsonwebtoken from npm for working with JWTs
-- jasmine from npm for testing
+# Implementation
 
-## Steps to Completion
+Key points:
+* Uses Express as web server
+* Uses Postgres for the SQL database
+* Uses bcrypt for password encryption
+* Uses JWT for authorization
+* Uses Jasmine and supertest for unit tests
+* Development done with TypeScript to reduce errors
 
-### 1. Plan to Meet Requirements
+# Deployment
 
-In this repo there is a `REQUIREMENTS.md` document which outlines what this API needs to supply for the frontend, as well as the agreed upon data shapes to be passed between front and backend. This is much like a document you might come across in real life when building or extending an API. 
+## Setting up the Postgres database
+In order to run this app you need a properly configured Postgres database. For this, you need a Postgres server running on your machine (see for exemple https://www.postgresql.org/).
 
-Your first task is to read the requirements and update the document with the following:
-- Determine the RESTful route for each endpoint listed. Add the RESTful route and HTTP verb to the document so that the frontend developer can begin to build their fetch requests.    
-**Example**: A SHOW route: 'blogs/:id' [GET] 
+Once Postgres is available on your computer, you need to execute the following steps:
+- Create the user `storefront_user` with password `7kJ3DDpqnHe3Qx`
+- Create the databases `storefront_backend` and `storefront_backend_test`, for development and testing respectively
+- Grant all privileges on the databases to the user `storefront_user`
 
-- Design the Postgres database tables based off the data shape requirements. Add to the requirements document the database tables and columns being sure to mark foreign keys.   
-**Example**: You can format this however you like but these types of information should be provided
-Table: Books (id:varchar, title:varchar, author:varchar, published_year:varchar, publisher_id:string[foreign key to publishers table], pages:number)
+This can be done with the following commands, once you enter `psql` as admin (or root):
 
-**NOTE** It is important to remember that there might not be a one to one ratio between data shapes and database tables. Data shapes only outline the structure of objects being passed between frontend and API, the database may need multiple tables to store a single shape. 
-
-### 2.  DB Creation and Migrations
-
-In order to create the Postgres database, first create the user by running in the psql command line:
+First create the user by running in the psql command line:
 ```
 CREATE USER storefront_user with password '7kJ3DDpqnHe3Qx';
 ```
@@ -43,41 +37,93 @@ Then create the tables for development and testing
 CREATE DATABASE storefront_backend;
 CREATE DATABASE storefront_backend_test;
 ```
-Finally, grant `storefront_user` access to these tables
+Finally, grant `storefront_user` access to these databases
 ```
 GRANT ALL PRIVILEGES ON DATABASE storefront_backend TO storefront_user;
 GRANT ALL PRIVILEGES ON DATABASE storefront_backend_test TO storefront_user;
 ```
 
-To run the migration up on the dev environment, run
+## App Installation
+The required packages can be installed using
+`yarn`
+
+## App Building
+To build this application use
+`yarn run build`
+
+## Dependencies and versions used
+
+The project depends on the following packages:
+* express
+* bcrypt
+* cors
+* db-migrate
+* db-migrate-pg
+* dotenv
+* jsonwebtoken
+* pg
+* typescript
+For development, there are additional dependencies
+* jasmine
+* jasmine-spec-reporter
+* jasmine-ts
+* prettier
+* eslint-config-prettier
+* eslint-plugin-prettier
+* nodemon
+* supertest
+* ts-node
+* tsc-watch
+
+See the file `package.json` for the exact versions used.
+
+## Testing
+A total of 78 tests can be run with
+`yarn run test`
+
+## Postgres database migrations
+To run the migration up in the dev environment, run
 ```
 db-migrate up
 ``` 
-To run the migration up test on the test environment, run
+To run the migration up in the test environment, run
 ```
 db-migrate up -e test
 ```
 To run the migrations down, substitute `down`for `up`.
 
+Note: all the migrations are in one file, so that tables are created and deleted in an order that is compatible with the use of foreign keys.
 
-Now that you have the structure of the databse outlined, it is time to create the database and migrations. Add the npm packages dotenv and db-migrate that we used in the course and setup your Postgres database. If you get stuck, you can always revisit the database lesson for a reminder. 
+## Setting up environment variables
+The following environment variables need to be set up:
+- POSTGRES_HOST=127.0.0.1
+- POSTGRES_DB=storefront_backend
+- POSTGRES_DB_TEST=storefront_backend_test
+- POSTGRES_USER=storefront_user
+- POSTGRES_PASSWORD=7kJ3DDpqnHe3Qx
+- ENV=dev
+- BCRYPT_SALT_ROUNDS=10
+- TOKEN_SECRET=LV7erLeKYDY47p (This value can be changed)
+- BCRYPT_PEPPER=ifSgBKoG5HShSW (This value can be changed)
 
-You must also ensure that any sensitive information is hashed with bcrypt. If any passwords are found in plain text in your application it will not pass.
+## Starting the server
+In order to start the server that exposes the API, type
+`yarn run start`
 
-### 3. Models
+# Folder structure
 
-Create the models for each database table. The methods in each model should map to the endpoints in `REQUIREMENTS.md`. Remember that these models should all have test suites and mocks.
+The main folders are:
+* `src` contains all the source files (in Typescript)
+  * `src/handlers` contains the API endpoints (see file `REQUIREMENTS.md` for details)
+  * `src/handlers/tests` contains the tests for the API endpoints
+  * `src/models` contains functions for accessing the Postgres database (see file `REQUIREMENTS.md` for details)
+  * `src/models/tests` contains the tests for the functions for accessing the Postgres databasefor
+  * `src/services` contains the function that extracts from the Postgres database the 5 products that appear in most orders (see file `REQUIREMENTS.md` for details)
+  * `src/services/tests` contains the test for the function that extracts the 5 products that appear in most orderss for the API endpoints
+  * `src/database.ts` configures the acces to the Postgres database in javascript based on environment variables
+  * `src/server.ts` containt the code that starts the express server and configures its routes
+* `migrations` contains the migration to create/delete table in the database, whether in test or dev
+* `build` contains the javascript files transpiled from TypeScript
+* `spec`contains a support file for tests
 
-### 4. Express Handlers
 
-Set up the Express handlers to route incoming requests to the correct model method. Make sure that the endpoints you create match up with the enpoints listed in `REQUIREMENTS.md`. Endpoints must have tests and be CORS enabled. 
-
-### 5. JWTs
-
-Add JWT functionality as shown in the course. Make sure that JWTs are required for the routes listed in `REQUIUREMENTS.md`.
-
-### 6. QA and `README.md`
-
-Before submitting, make sure that your project is complete with a `README.md`. Your `README.md` must include instructions for setting up and running your project including how you setup, run, and connect to your database. 
-
-Before submitting your project, spin it up and test each endpoint. If each one responds with data that matches the data shapes from the `REQUIREMENTS.md`, it is ready for submission!
